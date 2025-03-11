@@ -1,42 +1,50 @@
-import React, { useState } from "react";
+import React from "react";
 
-export default function VisualizadorProps(props) {
-    const { listaTareas } = props
-    const [lista, setLista] = useState(listaTareas);
-    const [nuevaTarea, setNuevaTarea] = useState('');
-
-
-    function handleAdd() {
-        if (nuevaTarea.trim() !== '') {
-            setLista([...lista, nuevaTarea]);
-            setNuevaTarea('');
-        }
+export default class VisualizadorProps extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            listaTareas: props.listaTareas,
+            nuevaTarea: ''
+        };
     }
 
-    function handleRemove() {
-        setLista(lista.filter(item => item !== lista));
+
+    handleAdd(e) {
+        e.preventDefault();
+        const nuevaTarea = this.nuevaLista.value
+        this.setState({
+            listaTareas: [...this.state.listaTareas, nuevaTarea]
+        });
     }
 
-    return (
-        <div>
-            <h2>Lista de tareas</h2>
-            <ul>
+    handleDelete(itemABorrar) {
+        const nuevaLista = this.state.listaTareas.filter(item => item !== itemABorrar )
+        this.setState({
+            listaTareas: [...nuevaLista]
+        })
+    }
+
+    render() {
+        return (
+            <div>
+                <h2>Lista de tareas</h2>
                 {
-                    listaTareas.map(item => (
-                        <li value={item}>
-                            {item}
-                            <button type="submit" onClick={handleRemove}>Eliminar item</button>
-                        </li>
+                    this.state.listaTareas.map(item => (
+                        <div>
+                            <p key={item}>{item}</p>
+                            <button type="submit" onClick={(e) => this.handleDelete(item)}>Eliminar item</button>
+                        </div>
                     ))
                 }
-            </ul>
-            <div>
                 <div>
-                    <input type="text" value={nuevaTarea}
-                        onChange={(e) => setNuevaTarea(e.target.value)} />
-                    <button type="button" onClick={handleAdd}>Añadir tarea</button>
+                    <form onSubmit={(e) => this.handleAdd(e)}>
+                        <label htmlFor="tarea">Nueva tarea</label>
+                        <input type="text" ref={(input) => { this.nuevaLista = input }} />
+                        <button type="submit">Añadir tarea</button>
+                    </form>
                 </div>
-            </div>
-        </div>
-    );
+            </div >
+        );
+    };
 }
